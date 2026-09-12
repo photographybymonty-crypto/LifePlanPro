@@ -11,6 +11,15 @@ echo "Building $APP_NAME…"
 rm -rf "$DIST"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
+# Keep this source compatible with the macOS 13 deployment target while building with newer SDKs.
+python3 - <<'PY'
+from pathlib import Path
+p = Path('Sources/LifePlanPro/main.swift')
+s = p.read_text()
+s = s.replace('.onChange(of: context.date){ _,v in now=v }', '.onChange(of: context.date){ v in now=v }')
+p.write_text(s)
+PY
+
 # Build a Universal 2 executable when the installed Swift toolchain supports both architectures.
 if swift build -c release --arch x86_64 --arch arm64; then
   BIN_DIR="$(swift build -c release --arch x86_64 --arch arm64 --show-bin-path)"
