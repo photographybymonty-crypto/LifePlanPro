@@ -16,6 +16,10 @@ from pathlib import Path
 p = Path('Sources/LifePlanPro/main.swift')
 s = p.read_text()
 s = s.replace('.onChange(of: context.date){ _,v in now=v }', '.onChange(of: context.date){ v in now=v }')
+s = s.replace('} } } }\nstruct AIPlannerCard', '} } } }\n}\nstruct AIPlannerCard')
+s = s.replace('} } } }\nstruct GoalsCard', '} } } }\n}\nstruct GoalsCard')
+s = s.replace('} } } } }\nstruct NotesCard', '} } } } }\n}\nstruct NotesCard')
+s = s.replace('} } } }\nstruct AIBar', '} } } }\n}\nstruct AIBar')
 p.write_text(s)
 PY
 
