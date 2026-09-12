@@ -13,15 +13,21 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
 python3 - <<'PY'
 from pathlib import Path
-p = Path('Sources/LifePlanPro/main.swift')
-s = p.read_text()
+src = Path('Sources/LifePlanPro/main.swift')
+s = src.read_text()
 s = s.replace('.onChange(of: context.date){ _,v in now=v }', '.onChange(of: context.date){ v in now=v }')
+s = s.replace('func tint(_ category:String)->Color', 'func categoryColor(_ category:String)->Color')
+s = s.replace('fill(tint(e.category))', 'fill(categoryColor(e.category))')
+s = s.replace('foregroundStyle(tint(t.category))', 'foregroundStyle(categoryColor(t.category))')
 s = s.replace('} } } }\nstruct AIPlannerCard', '} } } }\n}\nstruct AIPlannerCard')
 s = s.replace('} } } }\nstruct GoalsCard', '} } } }\n}\nstruct GoalsCard')
 s = s.replace('}\nstruct ProjectsCard', '}\n}\nstruct ProjectsCard')
 s = s.replace('} } } } }\nstruct NotesCard', '} } } } }\n}\nstruct NotesCard')
 s = s.replace('} } } }\nstruct AIBar', '} } } }\n}\nstruct AIBar')
-p.write_text(s)
+# Swift treats a file literally named main.swift as a top-level entry point, which conflicts with @main.
+# Compile the same corrected source as App.swift instead.
+Path('Sources/LifePlanPro/App.swift').write_text(s)
+src.unlink()
 PY
 
 if swift build -c release --arch x86_64 --arch arm64; then
